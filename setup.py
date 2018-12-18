@@ -16,4 +16,8 @@ setup(name='yarnspawner',
       description='JupyterHub Spawner for Apache Hadoop/YARN Clusters',
       long_description=long_description,
       packages=['yarnspawner'],
-      install_requires=requirements)
+      install_requires=requirements,
+      entry_points='''
+        [console_scripts]
+        yarnspawner-singleuser=yarnspawner.singleuser:main
+      ''')
