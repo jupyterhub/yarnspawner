@@ -21,14 +21,16 @@ class YarnSpawner(Spawner):
     )
 
     principal = Unicode(
-        '',
+        None,
         help='Kerberos principal for JupyterHub user',
+        allow_none=True,
         config=True,
     )
 
     keytab = Unicode(
-        '',
+        None,
         help='Path to kerberos keytab for JupyterHub user',
+        allow_none=True,
         config=True,
     )
 
@@ -67,7 +69,12 @@ class YarnSpawner(Spawner):
         config=True,
     )
 
-    cmd = Command(['yarnspawner-singleuser'], allow_none=True, config=True)
+    cmd = Command(
+        ['yarnspawner-singleuser'],
+        allow_none=True,
+        help='The command used for starting the single-user server.',
+        config=True
+    )
 
     mem_limit = ByteSpecification(
         '2 G',
