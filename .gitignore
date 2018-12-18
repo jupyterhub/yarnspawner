@@ -1,0 +1,11 @@
+*.pyc
+*.egg-info
+build/
+dist/
+docs/build/
+.cache/
+.coverage
+.pytest_cache/
+.eggs/
+.DS_Store
+htmlcov/
