@@ -1,3 +1,4 @@
+import versioneer
 from setuptools import setup
 
 with open('README.rst') as f:
@@ -9,7 +10,8 @@ requirements = [
 ]
 
 setup(name='yarnspawner',
-      version='0.0.1',
+      version=versioneer.get_version(),
+      cmdclass=versioneer.get_cmdclass(),
       license='BSD',
       maintainer='Jim Crist',
       maintainer_email='jiminy.crist@gmail.com',
