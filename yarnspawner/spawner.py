@@ -6,17 +6,17 @@ from tornado import gen
 
 
 class YarnSpawner(Spawner):
-    """A spawner for starting single-user instances in a YARN container."""
+    """A spawner for starting singleuser instances in a YARN container."""
 
     start_timeout = Integer(
         300,
-        help="Timeout (in seconds) before giving up on starting of single-user server.",
+        help="Timeout (in seconds) before giving up on starting of singleuser server.",
         config=True
     )
 
     ip = Unicode(
         "0.0.0.0",
-        help="The IP address (or hostname) the single-user server should listen on.",
+        help="The IP address (or hostname) the singleuser server should listen on.",
         config=True
     )
 
@@ -42,7 +42,7 @@ class YarnSpawner(Spawner):
 
     localize_files = Dict(
         help="""
-        Extra files to distribute to the single-user server container.
+        Extra files to distribute to the singleuser server container.
 
         This is a mapping from ``local-name`` to ``resource-path``. Resource
         paths can be local, or in HDFS (prefix with ``hdfs://...`` if so). If
@@ -65,21 +65,21 @@ class YarnSpawner(Spawner):
 
     prologue = Unicode(
         '',
-        help='Script to run before single-user server starts.',
+        help='Script to run before singleuser server starts.',
         config=True,
     )
 
     cmd = Command(
         ['yarnspawner-singleuser'],
         allow_none=True,
-        help='The command used for starting the single-user server.',
+        help='The command used for starting the singleuser server.',
         config=True
     )
 
     mem_limit = ByteSpecification(
         '2 G',
         help="""
-        Maximum number of bytes a single-user notebook server is allowed to
+        Maximum number of bytes a singleuser notebook server is allowed to
         use. Allows the following suffixes:
 
         - K -> Kibibytes
@@ -93,20 +93,20 @@ class YarnSpawner(Spawner):
         1,
         min=1,
         help="""
-        Maximum number of cpu-cores a single-user notebook server is allowed to
+        Maximum number of cpu-cores a singleuser notebook server is allowed to
         use. Unlike other spawners, this must be an integer amount >= 1.
         """,
         config=True)
 
     epilogue = Unicode(
         '',
-        help='Script to run after single-user server ends.',
+        help='Script to run after singleuser server ends.',
         config=True,
     )
 
     script_template = Unicode(
-        ("{prologue}\n",
-         "{single_user_command}\n",
+        ("{prologue}\n"
+         "{singleuser_command}\n"
          "{epilogue}"),
         help="""
         Template for application script.
@@ -114,7 +114,7 @@ class YarnSpawner(Spawner):
         Filled in by calling ``script_template.format(**variables)``. Variables
         include the following attributes of this class:
         - prologue
-        - single_user_command
+        - singleuser_command
         - epilogue
         """,
         config=True,
@@ -138,14 +138,14 @@ class YarnSpawner(Spawner):
         return client
 
     @property
-    def single_user_command(self):
-        """The full command (with args) to launch a single-user server"""
-        return ' '.join(self.cmd, + self.get_args())
+    def singleuser_command(self):
+        """The full command (with args) to launch a singleuser server"""
+        return ' '.join(self.cmd + self.get_args())
 
     def _build_specification(self):
         script = self.script_template.format(
             prologue=self.prologue,
-            cmd=self.single_user_command,
+            singleuser_command=self.singleuser_command,
             epilogue=self.epilogue
         )
 
@@ -179,7 +179,7 @@ class YarnSpawner(Spawner):
     def get_state(self):
         state = super().get_state()
         if self.app_id:
-            state.app_id = self.app_id
+            state['app_id'] = self.app_id
         return state
 
     def clear_state(self):
@@ -214,7 +214,7 @@ class YarnSpawner(Spawner):
                 await gen.sleep(0.5)
 
         # Wait for port to be set
-        while self.current_port == 0:
+        while getattr(self, 'current_port', 0) == 0:
             await gen.sleep(0.5)
 
         return self.current_ip, self.current_port
@@ -229,11 +229,11 @@ class YarnSpawner(Spawner):
         report = await gen.IOLoop.current().run_in_executor(
             None, client.application_report, self.app_id
         )
-        state = str(report.state)
-        if state == 'FAILED':
-            return 1
-        elif state in {'KILLED', 'FINISHED'}:
+        status = str(report.final_status)
+        if status in {'SUCCEEDED', 'KILLED'}:
             return 0
+        elif status == 'FAILED':
+            return 1
         else:
             return None
 

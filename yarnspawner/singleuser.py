@@ -1,3 +1,5 @@
+import os
+
 from jupyterhub.singleuser import SingleUserNotebookApp
 from jupyterhub.utils import random_port, url_path_join
 from traitlets import default
@@ -18,6 +20,12 @@ class YarnSingleUserNotebookApp(SingleUserNotebookApp):
 
 
 def main(argv=None):
+    # Set configuration directory to something local if not already set
+    for var in ['JUPYTER_RUNTIME_DIR', 'JUPYTER_DATA_DIR']:
+        if os.environ.get(var) is None:
+            if not os.path.exists('.jupyter'):
+                os.mkdir('.jupyter')
+            os.environ[var] = './.jupyter'
     return YarnSingleUserNotebookApp.launch_instance(argv)
 
 
