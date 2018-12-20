@@ -156,20 +156,19 @@ class YarnSpawner(Spawner):
 
         security = skein.Security.new_credentials()
 
-        service = skein.Service(
-            instances=1,
+        master = skein.Master(
             resources=resources,
             files=self.localize_files,
             env=self.get_env(),
-            commands=[script]
+            commands=[script],
+            security=security
         )
 
         return skein.ApplicationSpec(
             name='jupyterhub',
             queue=self.queue,
             user=self.user.name,
-            master=skein.Master(security=security),
-            services={'jupyterhub': service}
+            master=master
         )
 
     def load_state(self, state):
