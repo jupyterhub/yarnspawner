@@ -160,7 +160,7 @@ class YarnSpawner(Spawner):
             resources=resources,
             files=self.localize_files,
             env=self.get_env(),
-            commands=[script],
+            script=script,
             security=security
         )
 
