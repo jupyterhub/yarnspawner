@@ -70,7 +70,7 @@ class YarnSpawner(Spawner):
     )
 
     cmd = Command(
-        ['yarnspawner-singleuser'],
+        ['python -m yarnspawner.singleuser'],
         allow_none=True,
         help='The command used for starting the singleuser server.',
         config=True

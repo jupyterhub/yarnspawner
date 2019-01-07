@@ -19,11 +19,4 @@ setup(name='jupyterhub-yarnspawner',
       },
       packages=['yarnspawner'],
       python_requires='>=3.5',
-      install_requires=[
-          'jupyterhub>=0.8',
-          'skein',
-      ],
-      entry_points='''
-          [console_scripts]
-          yarnspawner-singleuser=yarnspawner.singleuser:main
-      ''')
+      install_requires=['jupyterhub>=0.8', 'skein'])
