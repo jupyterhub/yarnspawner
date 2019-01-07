@@ -5,6 +5,9 @@ from traitlets import Unicode, Dict, Integer
 from tornado import gen
 
 
+_STOPPED_STATES = {'FAILED', 'KILLED', 'FINISHED'}
+
+
 class YarnSpawner(Spawner):
     """A spawner for starting singleuser instances in a YARN container."""
 
@@ -202,7 +205,7 @@ class YarnSpawner(Spawner):
                 None, client.application_report, app_id
             )
             state = str(report.state)
-            if state in {'FAILED', 'KILLED', 'FINISHED'}:
+            if state in _STOPPED_STATES:
                 raise Exception("Application %s failed to start, check "
                                 "application logs for more information"
                                 % app_id)
@@ -215,6 +218,14 @@ class YarnSpawner(Spawner):
         # Wait for port to be set
         while getattr(self, 'current_port', 0) == 0:
             await gen.sleep(0.5)
+
+            report = await loop.run_in_executor(
+                None, client.application_report, app_id
+            )
+            if str(report.state) in _STOPPED_STATES:
+                raise Exception("Application %s failed to start, check "
+                                "application logs for more information"
+                                % app_id)
 
         return self.current_ip, self.current_port
 
