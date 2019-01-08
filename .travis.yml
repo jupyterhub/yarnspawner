@@ -15,6 +15,10 @@ branches:
   only:
     - master
 
+env:
+  global:
+    - secure: "ubuirmRkB/RANt2XdtvAlxjyYgfwy1i3wBnzq323ANqW3FJPeYogFa7iQaWDrjekg8azK9WXfHGF8yCNTkTHH1JlaXU9MiIveLUSVxR2PxjQRJyJ78pNOtNX5N+JQtA1pcgdfpkQ64nMSSSmgDlELBk5U9hOBD1y3or6yf38VtBp2HA2yt3ArfCTnv04ZaKkOVQA4JNCIjY8qVfym2KF6LvDQZGP9BoPllTY/c64w11Tt6rOCpcEm1inn94EBKsd3KjIeKP1nMG2150QqudiffRaPJ/Gtl0nbhFGITZtV1ylKc6NB/fkBQUIX+gXRXX9wKZWZ4a2yg7rcAnBiSpMEJoTxQCru5PbQHDSCmRupZb8YYIehuO6BsNOfZ7K+XMtcFHKaYk3CPGs01c7VRJ6fUcyd9k85ABu2Q7vCS5s5BT2XgX8hL+vLBMh3X/v2XFAUV2/z6INoapP3qRRog+DZgJ+w/bqI92pdiTGjqQPi6oROozv8xIyABR703KMKIpCWfBm4cQesQAqc4SZyBLvX0bwBX58l4xUaKeykDUHZ0zJte8aqT8cQNpXIs0FBbCc6XRNnM3wvfLc5LMHWOleUAV0w9EhDCyvMakGvPAcKBCq5pDxPsjSD/B57laGjUxMwSyIFly/Dz7j/pjnP6DITBRdTZz7RSGEdY9QGBhpVSo="
+
 jobs:
   fast_finish: true
 
@@ -25,23 +29,32 @@ jobs:
     - if: commit_message !~ skip-tests
       env:
       - CLUSTER_TYPE=base
+    - sudo: false
+      env:
+        - DOCS=true
 
 before_install:
-  # Upgrade docker-compose
-  - sudo rm /usr/local/bin/docker-compose
-  - curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` > docker-compose
-  - chmod +x docker-compose
-  - sudo mv docker-compose /usr/local/bin
-    # Install the test cluster
-  - pip install git+https://github.com/jcrist/hadoop-test-cluster.git
-    # Start the test cluster
-  - htcluster startup --image $CLUSTER_TYPE:latest --mount .:yarnspawner
+  - |
+    if [[ "$DOCS" != "true" ]]; then
+        ./continuous_integration/before_install.sh
+    fi
 
 install:
-  - htcluster exec -- ./yarnspawner/continuous_integration/install.sh
+  - |
+    if [[ "$DOCS" != "true" ]]; then
+        htcluster exec -- ./yarnspawner/continuous_integration/install.sh
+    else
+        pip install jupyterhub skein sphinx doctr
+        pip install -e .
+    fi
 
 script:
-  - htcluster exec -- ./yarnspawner/continuous_integration/runtests.sh
+  - |
+    if [[ "$DOCS" != "true" ]]; then
+        htcluster exec -- ./yarnspawner/continuous_integration/runtests.sh
+    else
+        ./continuous_integration/build_docs.sh
+    fi
 
 notifications:
   email: false
