@@ -19,9 +19,11 @@ jobs:
   fast_finish: true
 
   include:
-    - env:
+    - if: commit_message !~ skip-tests
+      env:
       - CLUSTER_TYPE=kerberos
-    - env:
+    - if: commit_message !~ skip-tests
+      env:
       - CLUSTER_TYPE=base
 
 before_install:
