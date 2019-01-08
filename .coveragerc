@@ -1,0 +1,7 @@
+[run]
+omit =
+    yarnspawner/tests/*.py
+    yarnspawner/_version.py
+    yarnspawner/singleuser.py
+source = 
+    yarnspawner

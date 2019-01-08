@@ -9,3 +9,5 @@ docs/build/
 .eggs/
 .DS_Store
 htmlcov/
+jupyterhub_cookie_secret
+yarnspawner-test-env.tar.gz
