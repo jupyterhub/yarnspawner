@@ -55,6 +55,8 @@ class YarnSpawner(Spawner):
         This can be used to distribute conda/virtual environments by
         configuring the following:
 
+        .. code::
+
             c.YarnSpawner.localize_files = {
                 'environment': '/path/to/archived/environment.tar.gz'
             }
@@ -116,6 +118,7 @@ class YarnSpawner(Spawner):
 
         Filled in by calling ``script_template.format(**variables)``. Variables
         include the following attributes of this class:
+
         - prologue
         - singleuser_command
         - epilogue
