@@ -1,5 +1,6 @@
 import os
 import subprocess
+import time
 from contextlib import contextmanager
 
 import pytest
@@ -8,9 +9,10 @@ from jupyterhub.tests.conftest import app, io_loop
 from jupyterhub.tests.mocking import MockHub
 from yarnspawner import YarnSpawner
 
+app = app
+io_loop = io_loop
 
 MockHub.hub_ip = "edge.example.com"
-MockHub.log_level = 'debug'
 
 
 KEYTAB_PATH = "/home/testuser/testuser.keytab"
@@ -81,3 +83,14 @@ def clean_cluster(skein_client):
         yield
     finally:
         ensure_no_apps(skein_client, error=True)
+
+
+def assert_shutdown_in(skein_client, app_id, timeout=None):
+    while timeout:
+        state = str(skein_client.application_report(app_id).state)
+        if state in {'FINISHED', 'FAILED', 'KILLED'}:
+            break
+        time.sleep(0.1)
+        timeout -= 0.1
+    else:
+        assert False, "Application wasn't properly terminated"
