@@ -15,8 +15,15 @@ setup(name='jupyterhub-yarnspawner',
       url='http://github.com/jcrist/yarnspawner',
       project_urls={
           'Source': 'https://github.com/jcrist/yarnspawner',
-          'Tracker': 'https://github.com/jcrist/yarnspawner/issues',
+          'Issue Tracker': 'https://github.com/jcrist/yarnspawner/issues',
+          'Documentation': 'https://jcrist.github.io/yarnspawner/'
       },
+      keywords='YARN HDFS hadoop jupyterhub',
+      classifiers=['Topic :: System :: Systems Administration',
+                   'Topic :: System :: Distributed Computing',
+                   'License :: OSI Approved :: BSD License',
+                   'Programming Language :: Python',
+                   'Programming Language :: Python :: 3'],
       packages=['yarnspawner'],
       python_requires='>=3.5',
-      install_requires=['jupyterhub>=0.8', 'skein'])
+      install_requires=['jupyterhub>=0.8', 'skein>=0.5.0'])
