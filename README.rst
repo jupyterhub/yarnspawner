@@ -1,7 +1,7 @@
 yarnspawner
 ===========
 
-|travis| |pypi|
+|travis| |pypi| |conda|
 
 Spawns JupyterHub single user notebook servers in `Apache YARN`_ containers.
 See `the documentation`_ for more information.
@@ -19,3 +19,5 @@ New BSD. See the `License File`_.
    :target: https://travis-ci.org/jcrist/yarnspawner
 .. |pypi| image:: https://img.shields.io/pypi/v/jupyterhub-yarnspawner.svg
    :target: https://pypi.org/project/jupyterhub-yarnspawner/
+.. |conda| image:: https://img.shields.io/conda/vn/conda-forge/jupyterhub-yarnspawner.svg
+   :target: https://anaconda.org/conda-forge/jupyterhub-yarnspawner

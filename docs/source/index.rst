@@ -8,6 +8,12 @@ Hadoop/YARN clusters.
 Installation
 ------------
 
+**Install with Conda:**
+
+.. code::
+
+    conda install -c conda-forge jupyterhub-yarnspawner
+
 **Install with Pip:**
 
 .. code::
