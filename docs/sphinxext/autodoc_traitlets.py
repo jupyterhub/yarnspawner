@@ -42,11 +42,11 @@ class TraitDocumenter(AttributeDocumenter):
         return 'config c.' + super().format_name()
 
     def add_directive_header(self, sig):
-        default = self.object.get_default_value()
+        default = self.object.default_value
         if default is Undefined:
-            default_s = ''
-        else:
-            default_s = repr(default)
+            default = ''
+        # Ensures escape sequences render properly
+        default_s = repr(repr(default))[1:-1]
         sig = ' = {}({})'.format(
             self.object.__class__.__name__,
             default_s,
