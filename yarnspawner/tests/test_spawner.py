@@ -73,7 +73,11 @@ def test_specification():
     spawner.epilogue = 'Do this after'
     spawner.mem_limit = '1 G'
     spawner.cpu_limit = 2
-    spawner.localize_files = {'environment': 'environment.tar.gz'}
+    spawner.localize_files = {
+        'environment': 'environment.tar.gz',
+        'file2': {'source': 'path/to/file',
+                  'visibility': 'public'}
+    }
     spawner.env = {'TEST_ENV_VAR': 'TEST_VALUE'}
 
     spec = spawner._build_specification()
@@ -88,6 +92,8 @@ def test_specification():
     assert spec.master.resources == skein.Resources(memory='1 GiB', vcores=2)
 
     assert 'environment' in spec.master.files
+    assert 'file2' in spec.master.files
+    assert spec.master.files['file2'].visibility == 'public'
 
     assert 'TEST_ENV_VAR' in spec.master.env
     assert 'JUPYTERHUB_API_TOKEN' in spec.master.env

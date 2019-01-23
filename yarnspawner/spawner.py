@@ -47,10 +47,11 @@ class YarnSpawner(Spawner):
         help="""
         Extra files to distribute to the singleuser server container.
 
-        This is a mapping from ``local-name`` to ``resource-path``. Resource
-        paths can be local, or in HDFS (prefix with ``hdfs://...`` if so). If
-        an archive (``.tar.gz`` or ``.zip``), the resource will be unarchived
-        as directory ``local-name``.
+        This is a mapping from ``local-name`` to ``resource``. Resource paths
+        can be local, or in HDFS (prefix with ``hdfs://...`` if so). If an
+        archive (``.tar.gz`` or ``.zip``), the resource will be unarchived as
+        directory ``local-name``. For finer control, resources can also be
+        specified as ``skein.File`` objects, or their ``dict`` equivalents.
 
         This can be used to distribute conda/virtual environments by
         configuring the following:
@@ -58,12 +59,16 @@ class YarnSpawner(Spawner):
         .. code::
 
             c.YarnSpawner.localize_files = {
-                'environment': '/path/to/archived/environment.tar.gz'
+                'environment': {
+                    'source': 'hdfs:///path/to/archived/environment.tar.gz',
+                    'visibility': 'public'
+                }
             }
             c.YarnSpawner.prologue = 'source environment/bin/activate'
 
         These archives are usually created using either ``conda-pack`` or
-        ``venv-pack``.
+        ``venv-pack``. For more information on distributing files, see
+        https://jcrist.github.io/skein/distributing-files.html.
         """,
         config=True,
     )
@@ -162,9 +167,13 @@ class YarnSpawner(Spawner):
 
         security = skein.Security.new_credentials()
 
+        # Support dicts as well as File objects
+        files = {k: skein.File.from_dict(v) if isinstance(v, dict) else v
+                 for k, v in self.localize_files.items()}
+
         master = skein.Master(
             resources=resources,
-            files=self.localize_files,
+            files=files,
             env=self.get_env(),
             script=script,
             security=security

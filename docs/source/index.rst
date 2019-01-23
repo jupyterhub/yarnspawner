@@ -134,10 +134,10 @@ following line to your ``jupyterhub_config.py``:
 .. code-block:: python
 
     # The principal JupyterHub is running as
-    c.YarnSpawner.principal = "jupyterhub"
+    c.YarnSpawner.principal = 'jupyterhub'
 
     # Path to the keytab you created
-    c.YarnSpawner.keytab = "/path/to/jupyterhub.keytab"
+    c.YarnSpawner.keytab = '/path/to/jupyterhub.keytab'
 
 
 Specifying Python Environments
@@ -285,15 +285,20 @@ either tool.
 
 .. code-block:: python
 
-    import skein
     c.YarnSpawner.localize_files = {
-        'environment': skein.File(
-            source='hdfs:///path/to/environments/environment.tar.gz',
-            type='archive',
-            visibility='public'
-        )
+        'environment': {
+            'source': 'hdfs:///path/to/environments/environment.tar.gz',
+            'visibility': 'public'
+        }
     }
     c.YarnSpawner.prologue = 'source environment/bin/activate'
+
+
+Note that we set ``visibility`` to ``public`` for the environment, so that
+multiple users can all share the same localized environment (reducing the cost
+of moving the environments around).
+
+For more information, see the `Skein documentation on distributing files`_.
 
 
 Additional Configuration Options
@@ -338,13 +343,11 @@ In summary, an example ``jupyterhub_config.py`` configuration enabling
     c.YarnSpawner.queue = 'jupyterhub'
 
     # Specify location of the archived Python environment
-    import skein
     c.YarnSpawner.localize_files = {
-        'environment': skein.File(
-            source='hdfs:///etc/jupyter/datascience.tar.gz',
-            type='archive',
-            visibility='public'
-        )
+        'environment': {
+            'source': 'hdfs:///path/to/environments/environment.tar.gz',
+            'visibility': 'public'
+        }
     }
     c.YarnSpawner.prologue = 'source environment/bin/activate'
 
@@ -388,6 +391,7 @@ other libraries:
 .. _venv-pack documentation:
 .. _venv-pack: https://jcrist.github.io/venv-pack/
 .. _YARN resource localization: https://hortonworks.com/blog/resource-localization-in-yarn-deep-dive/
+.. _Skein documentation on distributing files: https://jcrist.github.io/skein/distributing-files.html
 .. _jupyter-hdfscm: https://jcrist.github.io/hdfscm/
 .. _pyarrow: https://arrow.apache.org/docs/python/
 .. _skein: https://jcrist.github.io/skein/
