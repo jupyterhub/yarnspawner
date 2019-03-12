@@ -204,11 +204,15 @@ class YarnSpawner(Spawner):
         loop = gen.IOLoop.current()
 
         spec = self._build_specification()
-        # Set app_id == 'PENDING' to signal `poll` that we're starting
-        self.app_id = 'PENDING'
 
         client = await self._get_client()
-        app_id = await loop.run_in_executor(None, client.submit, spec)
+        # Set app_id == 'PENDING' to signal that we're starting
+        self.app_id = 'PENDING'
+        try:
+            app_id = await loop.run_in_executor(None, client.submit, spec)
+        except Exception:
+            # We errored, no longer pending
+            self.app_id = ''
         self.app_id = app_id
 
         # Wait for application to start
@@ -260,6 +264,19 @@ class YarnSpawner(Spawner):
             return None
 
     async def stop(self, now=False):
+        if self.app_id == 'PENDING':
+            # The application is in the process of being submitted. Wait for a
+            # reasonable amount of time until we have an application id
+            for i in range(20):
+                if self.app_id != 'PENDING':
+                    break
+                await gen.sleep(0.1)
+            else:
+                self.log.warn("Application has been PENDING for an "
+                              "unreasonable amount of time, there's likely "
+                              "something wrong")
+
+        # Application not submitted, or submission errored out, nothing to do.
         if self.app_id == '':
             return
 
