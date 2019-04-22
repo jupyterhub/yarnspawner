@@ -209,11 +209,16 @@ class YarnSpawner(Spawner):
         # Set app_id == 'PENDING' to signal that we're starting
         self.app_id = 'PENDING'
         try:
-            app_id = await loop.run_in_executor(None, client.submit, spec)
-        except Exception:
+            self.app_id = app_id = await loop.run_in_executor(None, client.submit, spec)
+        except Exception as exc:
             # We errored, no longer pending
             self.app_id = ''
-        self.app_id = app_id
+            self.log.error(
+                "Failed to submit application for user %s. Original exception:",
+                self.user.name,
+                exc_info=exc
+            )
+            raise
 
         # Wait for application to start
         while True:

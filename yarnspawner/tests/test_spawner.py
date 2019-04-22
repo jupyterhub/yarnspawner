@@ -78,7 +78,7 @@ def test_specification():
         'file2': {'source': 'path/to/file',
                   'visibility': 'public'}
     }
-    spawner.env = {'TEST_ENV_VAR': 'TEST_VALUE'}
+    spawner.environment = {'TEST_ENV_VAR': 'TEST_VALUE'}
 
     spec = spawner._build_specification()
 

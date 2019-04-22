@@ -9,5 +9,5 @@ if [[ "$DOCS" != "true" ]]; then
     # Install the test cluster
     pip install git+https://github.com/jcrist/hadoop-test-cluster.git
     # Start the test cluster
-    htcluster startup --image $CLUSTER_TYPE:latest --mount .:yarnspawner
+    htcluster startup --mount .:yarnspawner --config $CLUSTER_CONFIG
 fi
