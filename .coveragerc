@@ -3,5 +3,6 @@ omit =
     yarnspawner/tests/*.py
     yarnspawner/_version.py
     yarnspawner/singleuser.py
+    yarnspawner/jupyter_labhub.py
 source = 
     yarnspawner

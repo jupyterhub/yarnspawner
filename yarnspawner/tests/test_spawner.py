@@ -56,6 +56,12 @@ def test_integration(skein_client, app, configure_app):
         assert status == 0
 
 
+def test_import_jupyter_labhub():
+    # Just check it's importable
+    pytest.importorskip('jupyterlab')
+    import yarnspawner.jupyter_labhub  # noqa
+
+
 class MockUser(Mock):
     name = 'myname'
     server = Server()

@@ -301,6 +301,45 @@ of moving the environments around).
 For more information, see the `Skein documentation on distributing files`_.
 
 
+Usage with JupyterLab
+~~~~~~~~~~~~~~~~~~~~~
+
+JupyterHub can use JupyterLab_ as the frontend instead of the classic notebook
+interface. To do this, take the following steps:
+
+1. Install JupyterLab into the notebook (not the JupyterHub) environment.
+
+   .. code-block:: shell
+
+      # Install using conda
+      conda install -c conda-forge jupyterlab
+
+      # Or install with pip
+      pip install jupyterlab
+
+2. Install the JupyterLab Hub extension into the notebook (not the JupyterHub)
+   environment. This isn't strictly necessary, but adds a JupyterHub control
+   panel to the JupyterLab UI allowing easier login/logout.
+
+   .. code-block:: shell
+
+      jupyter labextension install @jupyterlab/hub-extension
+
+3. Configure JupyterHub to use JupyterLab instead.
+
+   .. code-block:: python
+
+      # Start users in JupyterLab by default
+      c.YarnSpawner.default_url = '/lab'
+
+      # Start JupyterLab with the hub extension (only required if you
+      # installed the JupyterLab Hub extension above)
+      c.YarnSpawner.cmd = ['python -m yarnspawner.jupyter_labhub']
+
+For more information see `JupyterLab on JupyterHub`_ and `JupyterLab Hub
+Extension`_ documentation.
+
+
 Additional Configuration Options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -392,6 +431,9 @@ other libraries:
 .. _venv-pack: https://jcrist.github.io/venv-pack/
 .. _YARN resource localization: https://hortonworks.com/blog/resource-localization-in-yarn-deep-dive/
 .. _Skein documentation on distributing files: https://jcrist.github.io/skein/distributing-files.html
+.. _JupyterLab: https://jupyterlab.readthedocs.io/
+.. _JupyterLab on JupyterHub: https://jupyterlab.readthedocs.io/en/stable/user/jupyterhub.html
+.. _JupyterLab Hub Extension: https://jupyterlab.readthedocs.io/en/stable/user/jupyterhub.html
 .. _jupyter-hdfscm: https://jcrist.github.io/hdfscm/
 .. _pyarrow: https://arrow.apache.org/docs/python/
 .. _skein: https://jcrist.github.io/skein/
