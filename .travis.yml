@@ -25,10 +25,10 @@ jobs:
   include:
     - if: commit_message !~ skip-tests
       env:
-      - CLUSTER_TYPE=kerberos
+      - CLUSTER_CONFIG=kerberos
     - if: commit_message !~ skip-tests
       env:
-      - CLUSTER_TYPE=base
+      - CLUSTER_CONFIG=simple
     - sudo: false
       env:
         - DOCS=true
