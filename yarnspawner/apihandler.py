@@ -9,7 +9,7 @@ class YarnSpawnerAPIHandler(APIHandler):
     @web.authenticated
     def post(self):
         """POST set user's spawner port number"""
-        user = self.get_current_user()
+        user = self.current_user
         data = self.get_json_body()
         port = int(data.get('port', 0))
         user.spawner.current_port = port
