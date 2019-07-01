@@ -1,22 +1,53 @@
 import os
 import subprocess
+import sys
 import time
 from contextlib import contextmanager
 
 import pytest
 import skein
-from jupyterhub.tests.conftest import app, io_loop
 from jupyterhub.tests.mocking import MockHub
+from traitlets.config import Config
 from yarnspawner import YarnSpawner
 
-app = app
-io_loop = io_loop
 
 MockHub.hub_ip = "edge.example.com"
 
-
 KEYTAB_PATH = "/home/testuser/testuser.keytab"
 HAS_KERBEROS = os.path.exists(KEYTAB_PATH)
+
+
+@pytest.fixture
+async def app(conda_env):
+    """Mock a jupyterhub app for testing"""
+    c = Config()
+    c.JupyterHub.spawner_class = YarnSpawner
+    c.YarnSpawner.localize_files = {'environment': conda_env}
+    c.YarnSpawner.prologue = ('set -x -e\n'
+                              'source environment/bin/activate\n'
+                              'env\n'
+                              'ls\n')
+    c.YarnSpawner.mem_limit = '512 M'
+
+    if HAS_KERBEROS:
+        c.YarnSpawner.principal = 'testuser'
+        c.YarnSpawner.keytab = KEYTAB_PATH
+
+    mocked_app = MockHub.instance(config=c)
+
+    await mocked_app.initialize([])
+    await mocked_app.start()
+
+    try:
+        yield mocked_app
+    finally:
+        # disconnect logging during cleanup because pytest closes captured FDs prematurely
+        mocked_app.log.handlers = []
+        MockHub.clear_instance()
+        try:
+            mocked_app.stop()
+        except Exception as e:
+            print("Error stopping Hub: %s" % e, file=sys.stderr)
 
 
 @pytest.fixture(scope="session")
@@ -44,22 +75,6 @@ def conda_env():
         conda_pack = pytest.importorskip('conda_pack')
         conda_pack.pack(output=envpath, verbose=True)
     return envpath
-
-
-@pytest.fixture(scope='module')
-def configure_app(app, conda_env):
-    app.tornado_settings['spawner_class'] = YarnSpawner
-    c = app.config
-    c.YarnSpawner.localize_files = {'environment': conda_env}
-    c.YarnSpawner.prologue = ('set -x -e\n'
-                              'source environment/bin/activate\n'
-                              'env\n'
-                              'ls\n')
-    c.YarnSpawner.mem_limit = '512 M'
-    if HAS_KERBEROS:
-        c.YarnSpawner.principal = 'testuser'
-        c.YarnSpawner.keytab = KEYTAB_PATH
-    return app
 
 
 def ensure_no_apps(skein_client, error=True):

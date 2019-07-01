@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -xe
 
-conda install -c conda-forge jupyterhub notebook -y
+conda install -c conda-forge jupyterhub jupyterlab notebook -y
 
-pip install skein pytest pytest-tornado flake8 conda-pack
+pip install skein pytest pytest-asyncio flake8 conda-pack
 
 cd ~/yarnspawner
 pip install -v --no-deps .
