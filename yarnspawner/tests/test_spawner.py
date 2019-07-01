@@ -13,8 +13,8 @@ from yarnspawner import YarnSpawner
 from .conftest import clean_cluster, assert_shutdown_in
 
 
-@pytest.mark.gen_test(timeout=60)
-def test_integration(skein_client, app, configure_app):
+@pytest.mark.asyncio
+async def test_integration(skein_client, app):
     with clean_cluster(skein_client):
         # Create a user
         add_user(app.db, app, name="alice")
@@ -23,21 +23,21 @@ def test_integration(skein_client, app, configure_app):
         token = alice.new_api_token()
 
         # Not started, status should be 0
-        status = yield alice.spawner.poll()
+        status = await alice.spawner.poll()
         assert status == 0
 
         # Stop can be called before start, no-op
-        yield alice.spawner.stop()
+        await alice.spawner.stop()
 
         # Start the server, and wait for it to start
         resp = None
         while resp is None or resp.status_code == 202:
-            yield gen.sleep(2.0)
-            resp = yield api_request(app, "users", "alice", "server", method="post")
+            await gen.sleep(2.0)
+            resp = await api_request(app, "users", "alice", "server", method="post")
 
         # Check that everything is running fine
         url = url_path_join(public_url(app, alice), "api/status")
-        resp = yield async_requests.get(
+        resp = await async_requests.get(
             url, headers={'Authorization': 'token %s' % token}
         )
         resp.raise_for_status()
@@ -47,12 +47,12 @@ def test_integration(skein_client, app, configure_app):
         app_id = alice.spawner.app_id
 
         # Shutdown the server
-        resp = yield api_request(app, "users", "alice", "server", method="delete")
+        resp = await api_request(app, "users", "alice", "server", method="delete")
         resp.raise_for_status()
         assert_shutdown_in(skein_client, app_id, timeout=10)
 
         # Check status
-        status = yield alice.spawner.poll()
+        status = await alice.spawner.poll()
         assert status == 0
 
 
@@ -63,7 +63,7 @@ def test_import_jupyter_labhub():
 
 
 class MockUser(Mock):
-    name = 'myname'
+    escaped_name = name = 'myname'
     server = Server()
 
     @property
