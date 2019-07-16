@@ -27,8 +27,8 @@ extensions = ['sphinx.ext.autodoc',
 numpydoc_show_class_members = False
 
 extlinks = {
-    'issue': ('https://github.com/jcrist/yarnspawner/issues/%s', 'Issue #'),
-    'pr': ('https://github.com/jcrist/yarnspawner/pull/%s', 'PR #')
+    'issue': ('https://github.com/jupyterhub/yarnspawner/issues/%s', 'Issue #'),
+    'pr': ('https://github.com/jupyterhub/yarnspawner/pull/%s', 'PR #')
 }
 
 # Sphinx Theme
@@ -40,7 +40,7 @@ html_theme_options = {
     'description': 'A JupyterHub Spawner for deploying on Apache Hadoop/YARN',
     'github_button': True,
     'github_count': False,
-    'github_user': 'jcrist',
+    'github_user': 'jupyterhub',
     'github_repo': 'yarnspawner',
     'travis_button': True,
     'show_powered_by': False,

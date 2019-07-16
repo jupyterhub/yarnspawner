@@ -29,7 +29,7 @@ YarnSpawner should be installed in the same environment and node as JupyterHub
 
 .. code::
 
-    git clone https://github.com/jcrist/yarnspawner.git
+    git clone https://github.com/jupyterhub/yarnspawner.git
     cd yarnspawner
     pip install .
 
