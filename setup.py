@@ -12,11 +12,11 @@ setup(name='jupyterhub-yarnspawner',
       maintainer_email='jiminy.crist@gmail.com',
       description='JupyterHub Spawner for Apache Hadoop/YARN Clusters',
       long_description=long_description,
-      url='http://github.com/jcrist/yarnspawner',
+      url='http://github.com/jupyterhub/yarnspawner',
       project_urls={
-          'Source': 'https://github.com/jcrist/yarnspawner',
-          'Issue Tracker': 'https://github.com/jcrist/yarnspawner/issues',
-          'Documentation': 'https://jcrist.github.io/yarnspawner/'
+          'Source': 'https://github.com/jupyterhub/yarnspawner',
+          'Issue Tracker': 'https://github.com/jupyterhub/yarnspawner/issues',
+          'Documentation': 'https://jupyterhub-yarnspawner.readthedocs.io'
       },
       keywords='YARN HDFS hadoop jupyterhub',
       classifiers=['Topic :: System :: Systems Administration',
