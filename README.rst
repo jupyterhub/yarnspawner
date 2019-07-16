@@ -3,7 +3,7 @@ yarnspawner
 
 |travis| |pypi| |conda|
 
-Spawns JupyterHub single user notebook servers in `Apache YARN`_ containers.
+Spawns JupyterHub single user notebook servers in `Hadoop/YARN`_ containers.
 See `the documentation`_ for more information.
 
 LICENSE
@@ -11,7 +11,7 @@ LICENSE
 
 New BSD. See the `License File`_.
 
-.. _Apache YARN: https://hadoop.apache.org/docs/current/hadoop-yarn/hadoop-yarn-site/YARN.html
+.. _Hadoop/YARN: https://hadoop.apache.org/docs/current/hadoop-yarn/hadoop-yarn-site/YARN.html
 .. _License File: https://github.com/jupyterhub/yarnspawner/blob/master/LICENSE
 .. _the documentation: https://jupyterhub-yarnspawner.readthedocs.io
 
