@@ -1,7 +1,7 @@
 import skein
 from jupyterhub.spawner import Spawner
 from jupyterhub.traitlets import Command, ByteSpecification
-from traitlets import Unicode, Dict, Integer
+from traitlets import Unicode, Dict, Integer, List
 from tornado import gen
 
 
@@ -131,6 +131,22 @@ class YarnSpawner(Spawner):
         config=True,
     )
 
+    credential_providers = List(
+        [],
+        help="""
+        Collection of systems for which to collect the kerberos delegation token.
+        It is a list of tuples. Each tuple has 3 elements: (``system-name``, ``sistem-uri``, ``system-principal``).
+        Example: 
+        .. code::
+            c.YarnSpawner.credential_providers = [{
+                'name':'hive', 
+                'uri':'hive2://127.0.0.1:10000/myDatabase', 
+                'principal':'hive/hadoop.mycompany@HADOOP.MYCOMPANY.COM'
+            }]
+        """,
+        config=True,
+    )
+
     # A cache of clients by (principal, keytab). In most cases this will only
     # be a single client. These should persist for the lifetime of jupyterhub.
     clients = {}
@@ -183,7 +199,8 @@ class YarnSpawner(Spawner):
             name='jupyterhub',
             queue=self.queue,
             user=self.user.name,
-            master=master
+            master=master,
+            credential_providers=self.credential_providers
         )
 
     def load_state(self, state):
