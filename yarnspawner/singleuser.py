@@ -1,14 +1,26 @@
 import json
 import os
 
-from jupyterhub.singleuser import SingleUserNotebookApp
+from jupyter_server.serverapp import ServerApp
 from jupyterhub.utils import random_port, url_path_join
 from traitlets import default
+
+if not os.environ.get("JUPYTERHUB_SINGLEUSER_APP"):
+    # setting this env prior to import of jupyterhub.singleuser avoids unnecessary import of notebook
+    os.environ["JUPYTERHUB_SINGLEUSER_APP"] = "jupyter_server.serverapp.ServerApp"
+
+try:
+    from jupyterhub.singleuser.mixins import make_singleuser_app
+except ImportError:
+    # backward-compat with jupyterhub < 1.3
+    from jupyterhub.singleuser import SingleUserNotebookApp as SingleUserServerApp
+else:
+    SingleUserServerApp = make_singleuser_app(ServerApp)
 
 
 # Borrowed and modified from jupyterhub/batchspawner:
 # https://github.com/jupyterhub/batchspawner/blob/d1052385f2/batchspawner/singleuser.py
-class YarnSingleUserNotebookApp(SingleUserNotebookApp):
+class YarnSingleUserNotebookApp(SingleUserServerApp):
     @default('port')
     def _port(self):
         return random_port()
