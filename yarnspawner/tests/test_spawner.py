@@ -17,6 +17,7 @@ from .conftest import clean_cluster, assert_shutdown_in
 async def test_integration(skein_client, app):
     with clean_cluster(skein_client):
         # Create a user
+        app = await app.__anext__()
         add_user(app.db, app, name="alice")
         alice = app.users["alice"]
         assert isinstance(alice.spawner, YarnSpawner)
