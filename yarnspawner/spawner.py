@@ -160,6 +160,8 @@ class YarnSpawner(Spawner):
             epilogue=self.epilogue
         )
 
+        self.mem_limit = self.user_options['memory'] * 1024 * 1024
+        self.cpu_limit = self.user_options['cores']
         resources = skein.Resources(
             memory='%d b' % self.mem_limit,
             vcores=self.cpu_limit
