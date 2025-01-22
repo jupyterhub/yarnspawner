@@ -1,6 +1,7 @@
 import skein
 from jupyterhub.spawner import Spawner
 from jupyterhub.traitlets import Command, ByteSpecification
+from tenacity import retry_if_exception_type, retry, stop_after_attempt, wait_exponential
 from traitlets import Unicode, Dict, Integer
 from tornado import gen
 
@@ -143,10 +144,18 @@ class YarnSpawner(Spawner):
                           keytab=self.keytab,
                           security=skein.Security.new_credentials())
             client = await gen.IOLoop.current().run_in_executor(
-                None, lambda: skein.Client(**kwargs)
+                None, lambda: self._retry_skein_client(**kwargs)
             )
             type(self).clients[key] = client
         return client
+
+    @retry(
+        retry=retry_if_exception_type(skein.exceptions.DriverError),
+        stop=stop_after_attempt(5),
+        wait=wait_exponential(multiplier=1, min=1, max=10),
+    )
+    def _retry_skein_client(self, **kwargs):
+        return skein.Client(**kwargs)
 
     @property
     def singleuser_command(self):
