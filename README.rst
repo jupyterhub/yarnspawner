@@ -1,6 +1,8 @@
 yarnspawner
 ===========
 
+**yarnspawner is now archived and no longer maintained**
+
 |travis| |pypi| |conda| |rtfd|
 
 Spawns JupyterHub single user notebook servers in `Hadoop/YARN`_ containers.
