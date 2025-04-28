@@ -1,3 +1,4 @@
+import json
 import os
 
 from jupyterhub.singleuser import SingleUserNotebookApp
@@ -13,9 +14,9 @@ class YarnSingleUserNotebookApp(SingleUserNotebookApp):
         return random_port()
 
     def start(self):
-        self.hub_auth._api_request(method='POST',
-                                   url=url_path_join(self.hub_api_url, 'yarnspawner'),
-                                   json={'port': self.port})
+        self.io_loop.add_callback(self.hub_auth._api_request, method='POST',
+                                  url=url_path_join(self.hub_api_url, 'yarnspawner'),
+                                  body=json.dumps({'port': self.port}))
         super().start()
 
 
