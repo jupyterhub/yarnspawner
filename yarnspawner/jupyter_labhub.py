@@ -17,7 +17,8 @@ class YarnSingleUserLabApp(SingleUserLabApp):
     def start(self):
         self.hub_auth._api_request(method='POST',
                                    url=url_path_join(self.hub_api_url, 'yarnspawner'),
-                                   json={'port': self.port})
+                                   json={'port': self.port, 'name': self.server_name})
+        self.log.debug("Starting notebook server '%s' at port %i", self.server_name, self.port)
         super().start()
 
 
